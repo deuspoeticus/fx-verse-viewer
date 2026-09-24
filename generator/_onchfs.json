@@ -1,0 +1,31 @@
+{
+  "cid": "0x5a33b10417d306b3d1f1c6e4a691052ba7c0c81bb54c2b3eed101d6e471f49a6",
+  "chain": "ethereum",
+  "filesystem": "0x9e0f2864c6f125bbf599df6ca6e6c3774c5b2e04",
+  "files": [
+    {
+      "path": "fxhash.js",
+      "cid": "0xd02703beb93f4a93a6b3c3bf5e0264eab9b012902a5f1c78e75ce4f64e76d3c9",
+      "bytes": 9107,
+      "type": "application/javascript"
+    },
+    {
+      "path": "index.html",
+      "cid": "0x2d3accebe5f3746b166ede411eea50f947682b9ace9517c632bebe9199eb7d4b",
+      "bytes": 411,
+      "type": "text/html"
+    },
+    {
+      "path": "index.js",
+      "cid": "0xd921bcc93faef22e4ba5de0aecc8709aa6f91bbf95afba5aff97a957757ba7d3",
+      "bytes": 5498,
+      "type": "application/javascript"
+    },
+    {
+      "path": "styles.css",
+      "cid": "0x5896a66986cfea0d8b0739637fb0532b00ee358f5b750c4efa948b9c6a35638c",
+      "bytes": 263,
+      "type": "text/css"
+    }
+  ]
+}

@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FX(VERSE) — Deus Poeticus</title>
+<meta name="description" content="FX(VERSE), a generative poetry work by Deus Poeticus. Minted on Ethereum, December 2023. Rendered live from the on-chain generator.">
+<style>
+  @font-face { font-family: "Iosevka"; font-style: normal; font-weight: 400; font-display: swap; src: url("./fonts/iosevka-latin-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Iosevka"; font-style: italic; font-weight: 400; font-display: swap; src: url("./fonts/iosevka-latin-400-italic.woff2") format("woff2"); }
+  @font-face { font-family: "Iosevka"; font-style: normal; font-weight: 500; font-display: swap; src: url("./fonts/iosevka-latin-500-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Iosevka"; font-style: normal; font-weight: 600; font-display: swap; src: url("./fonts/iosevka-latin-600-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Iosevka"; font-style: normal; font-weight: 700; font-display: swap; src: url("./fonts/iosevka-latin-700-normal.woff2") format("woff2"); }
+  :root {
+    --paper: #ffffff; --ink: #2a28c9; --text: #1a1a2e; --muted: #6b6b80;
+    --rule: #d9d9ec; --plate: #f3f3fa;
+    --display: "Iosevka", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    --body: "Iosevka", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --paper:#0d0d24; --ink:#a9a8ff; --text:#e8e8f4; --muted:#9a9ab5; --rule:#2a2a4a; --plate:#16163a; }
+  }
+  :root[data-theme="dark"] { --paper:#0d0d24; --ink:#a9a8ff; --text:#e8e8f4; --muted:#9a9ab5; --rule:#2a2a4a; --plate:#16163a; }
+  *, *::before, *::after { box-sizing: inherit; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body { margin: 0; background: var(--paper); color: var(--text); font: 400 1rem/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+  a { color: var(--ink); text-underline-offset: .18em; text-decoration-thickness: 1px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 3rem); }
+
+  /* Title + live machine */
+  header.title {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 2.5rem clamp(2rem, 5vw, 4.5rem); align-items: center;
+    padding: clamp(2.5rem, 7vw, 5.5rem) 0 clamp(2rem, 5vw, 3.5rem);
+    border-bottom: 1px solid var(--rule);
+  }
+  h1 { font: 700 clamp(2rem, 5.5vw, 3.5rem)/1 var(--display); color: var(--ink); margin: 0; letter-spacing: -.01em; }
+  .byline { font: 500 .8125rem/1.3 var(--display); margin: .85rem 0 1.5rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+  .lede { margin: 0; max-width: 54ch; font-size: .9375rem; line-height: 1.65; color: var(--text); }
+  .machine .frame { aspect-ratio: 1 / 1; }
+  .machine-bar { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-top: .75rem; font-size: .8125rem; }
+  .machine-bar .seedline { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .btn {
+    font: 600 .75rem var(--display); color: var(--ink); background: transparent;
+    border: 1px solid var(--ink); padding: .45rem .85rem; cursor: pointer; white-space: nowrap;
+    text-transform: uppercase; letter-spacing: .08em;
+  }
+  .btn:hover { background: var(--ink); color: var(--paper); }
+
+  dl.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 1rem 2rem; margin: 0; padding: 1.5rem 0; border-bottom: 1px solid var(--rule); }
+  .facts div { min-width: 0; }
+  .facts dt { font-size: .6875rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+  .facts dd { margin: .3rem 0 0; font-weight: 500; font-size: .9375rem; overflow-wrap: anywhere; }
+  .facts dd a { font-weight: 500; }
+
+  main { padding: clamp(2.5rem, 6vw, 4rem) 0 5rem; }
+  h2.section { font: 700 .8125rem/1.1 var(--display); color: var(--ink); margin: 0 0 .6rem; text-transform: uppercase; letter-spacing: .1em; }
+  .status { color: var(--muted); font-style: normal; font-size: .875rem; margin: 0 0 2rem; min-height: 1.5em; }
+  .status.warn { color: #b3261e; }
+
+  ol.plates { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: clamp(1.75rem, 3vw, 2.75rem) clamp(1.25rem, 2.5vw, 2rem); }
+  .frame { position: relative; aspect-ratio: 1 / 1; background: var(--plate); overflow: hidden; outline: 1px solid var(--rule); outline-offset: -1px; }
+  .frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: transparent; }
+  .frame .ph { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font: italic 1rem var(--display); padding: 1rem; text-align: center; }
+  .plate .open { all: unset; cursor: pointer; display: flex; gap: .75rem; align-items: baseline; margin-top: .7rem; width: 100%; }
+  .num { font: 700 .9375rem/1 var(--display); color: var(--ink); min-width: 3ch; }
+  .cap { font-size: .8125rem; line-height: 1.4; }
+  .cap i { color: var(--muted); }
+  .plate .open:hover .num, .plate .open:focus-visible .num { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .15em; }
+
+  dialog { border: 0; padding: 0; max-width: min(1100px, calc(100vw - 2rem)); width: 100%; max-height: calc(100dvh - 2rem); background: var(--paper); color: var(--text); }
+  dialog::backdrop { background: rgba(10, 10, 40, .72); }
+  .detail { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
+  .detail .frame { outline: 0; }
+  .info { padding: 2rem 2rem 1.75rem; overflow-y: auto; max-height: calc(100dvh - 2rem); }
+  .info h3 { font: 400 2.4rem/1 var(--display); color: var(--ink); margin: 0 0 .35rem; }
+  .info .sub { margin: 0 0 1.5rem; font-style: italic; color: var(--muted); }
+  table.traits { width: 100%; border-collapse: collapse; font-size: .9375rem; margin-bottom: 1.5rem; }
+  .traits th, .traits td { text-align: left; padding: .4rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; overflow-wrap: anywhere; }
+  .traits th { font-weight: 400; color: var(--muted); width: 38%; padding-right: 1rem; }
+  .swatch { display: inline-block; width: .8em; height: .8em; vertical-align: -.05em; margin-right: .4em; outline: 1px solid var(--rule); }
+  .links { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; margin: 0; padding: 0; list-style: none; font-size: .9375rem; }
+  .close { position: absolute; top: .75rem; right: .75rem; z-index: 2; background: var(--paper); color: var(--ink); border: 1px solid var(--rule); font: 1rem var(--body); padding: .3rem .75rem; cursor: pointer; }
+
+  footer { border-top: 1px solid var(--rule); padding: 1.5rem 0 3rem; font-size: .875rem; color: var(--muted); }
+  footer p { margin: 0 0 .4rem; max-width: 80ch; }
+
+  @media (max-width: 760px) {
+    header.title, .detail { grid-template-columns: 1fr; }
+    .info { max-height: none; }
+    dialog { overflow-y: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="title">
+    <div>
+      <h1>FX(VERSE)</h1>
+      <p class="byline">by Deus Poeticus</p>
+      <p class="lede">The very medium of poetry, encapsulated. A generative poem-machine: each seed casts a form, a lineage and a page, then writes itself in ink. First volume of the <em>FX(POETRY)</em> trilogy, to be completed by <em>FX(RHYME)</em> and <em>FX(DADA)</em>.</p>
+    </div>
+    <figure class="machine" style="margin:0">
+      <div class="frame" id="machine"><span class="ph">Loading the generator…</span></div>
+      <figcaption class="machine-bar">
+        <span class="seedline" id="machine-seed">An unminted iteration, drawn live</span>
+        <button class="btn" id="reroll" type="button">Draw another</button>
+      </figcaption>
+    </figure>
+  </header>
+
+  <dl class="facts">
+    <div><dt>Minted</dt><dd>December 2023</dd></div>
+    <div><dt>Chain</dt><dd>Ethereum mainnet</dd></div>
+    <div><dt>Iterations</dt><dd id="f-supply">—</dd></div>
+    <div><dt>Generator</dt><dd>Stored on-chain (onchfs)</dd></div>
+    <div><dt>Contract</dt><dd><a href="https://etherscan.io/token/0x3f4A55Bd3CaA78e7Abe9bDc5DF10131170834029">0x3f4A…4029</a></dd></div>
+    <div><dt>Market</dt><dd><a href="https://opensea.io/collection/fx-verse">OpenSea</a></dd></div>
+  </dl>
+
+  <main>
+    <h2 class="section">Minted iterations</h2>
+    <p class="status" id="status" aria-live="polite">Reading tokens from Ethereum…</p>
+    <ol class="plates" id="plates"></ol>
+  </main>
+
+  <footer>
+    <p id="source-note">Each iteration is rendered live by the original generator, archived from the onchfs file system on Ethereum, using the seed and minter stored on-chain for that token.</p>
+  </footer>
+</div>
+
+<dialog id="detail" aria-labelledby="d-title">
+  <button class="close" id="close" type="button">Close</button>
+  <div class="detail">
+    <div class="frame" id="d-frame"></div>
+    <div class="info">
+      <h3 id="d-title"></h3>
+      <p class="sub" id="d-sub"></p>
+      <table class="traits"><tbody id="d-traits"></tbody></table>
+      <ul class="links" id="d-links"></ul>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(() => {
+  const CONTRACT = "0x3f4A55Bd3CaA78e7Abe9bDc5DF10131170834029";
+  const GENERATOR_URI = "onchfs://5a33b10417d306b3d1f1c6e4a691052ba7c0c81bb54c2b3eed101d6e471f49a6";
+  const GENERATOR = "./generator/index.html";
+  const RPCS = ["https://ethereum-rpc.publicnode.com", "https://eth.drpc.org", "https://1rpc.io/eth"];
+  // Known from token #2's original fxhash metadata; used to check that the
+  // on-chain seed is exactly the fxhash the generator expects.
+  const CHECK = { id: 2, fxhash: "0xc14458982eea6a8d6c0b198f146da490c01124fed1603f86e24be115568f574e" };
+
+  const $ = (id) => document.getElementById(id);
+  const status = $("status"), plates = $("plates"), dlg = $("detail");
+  const tokens = new Map();      // id -> { id, seed, minter, owner, fxParams, features }
+  const frameToken = new Map();  // iframe contentWindow -> id
+
+  /* ---------- chain reads (raw JSON-RPC, no libraries) ---------- */
+  const SEL = { totalSupply: "0x18160ddd", ownerOf: "0x6352211e", genArtInfo: "0xa5a2d097" };
+  const u256 = (n) => BigInt(n).toString(16).padStart(64, "0");
+  let rpcIndex = 0;
+  async function ethCall(data) {
+    let lastErr;
+    for (let k = 0; k < RPCS.length; k++) {
+      const url = RPCS[(rpcIndex + k) % RPCS.length];
+      try {
+        const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 12000);
+        const r = await fetch(url, { method: "POST", signal: ctl.signal, headers: { "content-type": "application/json" },
+          body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to: CONTRACT, data }, "latest"] }) });
+        clearTimeout(t);
+        const j = await r.json();
+        if (j.error) { if (/revert/i.test(j.error.message || "")) throw Object.assign(new Error("revert"), { revert: true }); throw new Error(j.error.message); }
+        rpcIndex = (rpcIndex + k) % RPCS.length;
+        return j.result.slice(2);
+      } catch (e) { if (e.revert) throw e; lastErr = e; }
+    }
+    throw lastErr;
+  }
+  const word = (h, i) => h.slice(i * 64, i * 64 + 64);
+  async function readToken(id) {
+    const h = await ethCall(SEL.genArtInfo + u256(id));           // (address minter, bytes32 seed, bytes fxParams)
+    const minter = "0x" + word(h, 0).slice(24);
+    const seed = "0x" + word(h, 1);
+    const off = parseInt(word(h, 2), 16) * 2;
+    const len = parseInt(h.slice(off, off + 64), 16);
+    const fxParams = h.slice(off + 64, off + 64 + len * 2);
+    if (/^0x0+$/.test(seed)) return null;
+    let owner = "";
+    try { owner = "0x" + (await ethCall(SEL.ownerOf + u256(id))).slice(24); } catch {}
+    return { id, seed, minter, owner, fxParams };
+  }
+  async function loadFromChain() {
+    const supply = parseInt(await ethCall(SEL.totalSupply), 16);
+    const out = [];
+    for (let id = 1; id <= supply; id++) {         // fxhash collections are 1-indexed
+      const t = await readToken(id).catch(() => null);
+      if (t) out.push(t);
+    }
+    return { supply, list: out, source: "chain" };
+  }
+  async function loadSnapshot() {
+    const r = await fetch("./tokens.json", { cache: "no-store" });
+    if (!r.ok) throw new Error("no snapshot");
+    const j = await r.json();
+    return { supply: j.totalSupply, list: j.tokens.filter((t) => t.id > 0), source: "snapshot", at: j.snapshotAt };
+  }
+
+  /* ---------- generator ---------- */
+  function renderUrl({ seed, id = 0, minter, fxParams }) {
+    const q = new URLSearchParams({ cid: GENERATOR_URI, fxhash: seed, fxiteration: String(id), fxcontext: "standalone", fxchain: "ETHEREUM" });
+    if (minter) q.set("fxminter", minter);
+    if (fxParams) q.set("fxparams", fxParams);
+    return `${GENERATOR}?${q}${fxParams ? "#0x" + fxParams : ""}`;
+  }
+  function mountFrame(container, url, title, id) {
+    const f = document.createElement("iframe");
+    f.title = title; f.loading = "lazy"; f.src = url;
+    f.setAttribute("sandbox", "allow-scripts");
+    f.addEventListener("load", () => {
+      if (id != null) frameToken.set(f.contentWindow, id);
+      // fxhash snippet answers these with the iteration's features
+      try { f.contentWindow.postMessage("fxhash_getInfo", "*"); f.contentWindow.postMessage("fxhash_getFeatures", "*"); } catch {}
+    });
+    container.replaceChildren(f);
+    return f;
+  }
+  window.addEventListener("message", (e) => {
+    const id = frameToken.get(e.source); if (id == null || !e.data || typeof e.data !== "object") return;
+    if (e.data.id === "fxhash_getInfo") gotFeatures(id, e.data.data?.features);
+    if (e.data.id === "fxhash_getFeatures") gotFeatures(id, e.data.data);
+  });
+
+  const cap = (s) => (s ? String(s).charAt(0) + String(s).slice(1).toLowerCase() : "");
+  function feat(f, key) { if (!f) return null; const k = Object.keys(f).find((x) => x.toUpperCase() === key); return k ? f[k] : null; }
+  function caption(f) {
+    const form = feat(f, "FORM"), ref = feat(f, "REFERENCE");
+    if (form && ref) return `${cap(form)}, <i>after ${cap(ref)}</i>`;
+    return form ? cap(form) : "";
+  }
+  function gotFeatures(id, f) {
+    if (!f || typeof f !== "object" || !Object.keys(f).length) return;
+    const t = tokens.get(id); if (!t || t.features) return;
+    t.features = f;
+    const li = plates.querySelector(`[data-id="${id}"] .cap`); if (li) li.innerHTML = caption(f);
+    if (dlg.open && dlg.dataset.id == id) fillTraits(t);
+  }
+
+  /* ---------- plates ---------- */
+  function renderPlate(t) {
+    const li = document.createElement("li");
+    li.className = "plate"; li.dataset.id = t.id;
+    li.innerHTML = `<div class="frame"><span class="ph">…</span></div>
+      <button class="open" type="button" aria-label="Open iteration ${t.id}"><span class="num">${String(t.id).padStart(3, "0")}</span><span class="cap"></span></button>`;
+    plates.append(li);
+    mountFrame(li.querySelector(".frame"), renderUrl(t), `FX(VERSE) #${t.id}`, t.id);
+    li.querySelector(".open").addEventListener("click", () => openDetail(t.id));
+  }
+  const short = (a) => (a ? a.slice(0, 6) + "…" + a.slice(-4) : "—");
+  function fillTraits(t) {
+    const rows = [];
+    for (const [k, v] of Object.entries(t.features || {})) {
+      const val = String(v);
+      const sw = /^#[0-9a-f]{3,8}$/i.test(val) ? `<span class="swatch" style="background:${val}"></span>` : "";
+      rows.push([cap(k), sw + val.replace(/</g, "&lt;")]);
+    }
+    rows.push(["Seed", `<small>${t.seed}</small>`]);
+    rows.push(["Minter", `<a href="https://etherscan.io/address/${t.minter}" target="_blank" rel="noopener">${short(t.minter)}</a>`]);
+    if (t.owner) rows.push(["Owner", `<a href="https://etherscan.io/address/${t.owner}" target="_blank" rel="noopener">${short(t.owner)}</a>`]);
+    $("d-traits").innerHTML = rows.map(([k, v]) => `<tr><th scope="row">${k}</th><td>${v}</td></tr>`).join("");
+    $("d-sub").innerHTML = caption(t.features) || "&nbsp;";
+  }
+  function openDetail(id) {
+    const t = tokens.get(id); if (!t) return;
+    dlg.dataset.id = id;
+    $("d-title").textContent = `FX(VERSE) #${id}`;
+    fillTraits(t);
+    mountFrame($("d-frame"), renderUrl(t), `FX(VERSE) #${id}, large`, id);
+    $("d-links").innerHTML = [
+      [renderUrl(t), "Open full screen"],
+      [`https://etherscan.io/nft/${CONTRACT}/${id}`, "Etherscan"],
+      [`https://opensea.io/assets/ethereum/${CONTRACT}/${id}`, "OpenSea"],
+    ].map(([h, l]) => `<li><a href="${h}" target="_blank" rel="noopener">${l}</a></li>`).join("");
+    dlg.showModal();
+  }
+  $("close").addEventListener("click", () => dlg.close());
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener("close", () => $("d-frame").replaceChildren());
+
+  /* ---------- live machine ---------- */
+  function randomSeed() { const b = crypto.getRandomValues(new Uint8Array(32)); return "0x" + [...b].map((x) => x.toString(16).padStart(2, "0")).join(""); }
+  function reroll() {
+    const seed = randomSeed();
+    mountFrame($("machine"), renderUrl({ seed }), "FX(VERSE), unminted iteration", null);
+    $("machine-seed").textContent = `Unminted · ${seed.slice(0, 10)}…${seed.slice(-6)}`;
+  }
+  $("reroll").addEventListener("click", reroll);
+
+  /* ---------- boot ---------- */
+  (async () => {
+    const gen = await fetch(GENERATOR, { method: "HEAD" }).then((r) => r.ok).catch(() => false);
+    if (!gen) {
+      $("machine").innerHTML = '<span class="ph">Generator not archived yet. Run npm run archive in this folder.</span>';
+      $("reroll").disabled = true;
+    } else reroll();
+
+    let data;
+    try { data = await loadFromChain(); }
+    catch { try { data = await loadSnapshot(); } catch { data = null; } }
+    if (!data || !data.list.length) {
+      status.className = "status warn";
+      status.textContent = "Could not read tokens from Ethereum, and no tokens.json snapshot was found. Run npm run archive, then reload.";
+      return;
+    }
+    $("f-supply").textContent = String(data.supply);
+    data.list.forEach((t) => { tokens.set(t.id, t); if (gen) renderPlate(t); });
+
+    const chk = tokens.get(CHECK.id);
+    if (chk && chk.seed.toLowerCase() !== CHECK.fxhash) {
+      status.className = "status warn";
+      status.textContent = `Seed check failed for #${CHECK.id}: the on-chain seed differs from the fxhash it was minted with, so renders may not match the originals.`;
+    } else if (data.source === "snapshot") {
+      status.textContent = `Ethereum RPCs unreachable; showing the local snapshot from ${new Date(data.at).toLocaleDateString()}.`;
+    } else status.remove();
+  })();
+})();
+</script>
+</body>
+</html>
